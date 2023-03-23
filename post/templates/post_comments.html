@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class = "row">
+    <div class="col-sm-12 col-md-6 col-lg-6 border">
+        <p>{{ post.description }}</p>
+            {% if post.image %}
+                <img class='img-fluid' src="{{ post.image.url }}" alt = "" />
+            {% endif %}
+    </div>
+    <div class="col-sm-12 col-md-6 col-lg-6">
+        <div class="border" style="max-height:300px; min-height:300px; overflow-y:scroll; border">
+            {% for comment in comments %}
+                <small><a class="text-decoration" href="{% url 'user:profile' comment.user.username %}">{{ comment.user.username }}</a></small>
+                <p>{{ comment.description }}</p>
+            {% endfor %}
+        </div>
+        <div class="border">
+            <form method='post' action = "">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input class="btn btn-primary" type="submit" name="submit" value="Comment"/>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock content %}

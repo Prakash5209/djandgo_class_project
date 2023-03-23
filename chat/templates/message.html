@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row mt-3">
+    <div class="col-sm-2 col-md-4 col-lg-4">
+        {% comment %} {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-success">
+                    {{message}}
+                </div>
+            {% endfor %}
+        {% endif %} {% endcomment %}
+        <div class="border">
+            <h3>Users</h3>
+            {% for user in users %}
+                <div>
+                    <a class="{% if user.username != username %}text-decoration-none{% endif %}" href="{% url 'chat:message_user' user.username %}">{{ user.username }}</a>
+                </div><br>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-sm-10 col-md-8 col-lg-8">
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-success">
+                {{message}}
+            </div>
+            {% endfor %}
+        {% endif %} 
+        <div style="max-height:300px; min-height:300px; overflow-y:scroll" class="border">
+            {% for chat in conversations %}
+                {% if chat.from_user == request.user %}
+                    <div class="float-end">
+                        <a class="text-decoration-none text-danger" data-messageid="{{chat.id}}" data-bs-toggle="modal" data-bs-target="#exampleModal" href="">
+                            <small>Delete</small>
+                        </a>
+                        <span> {{ chat.description }}</span>
+                    </div>
+                {% else %}
+                    <div class="">
+                        <span> {{ chat.description }}</span>
+                    </div>
+                {% endif %}
+                <br>
+            {% endfor %}
+        </div>
+        <div class="border">
+            <form method="post" action="">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" name="submit" value="send"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Delete Message</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">Are you sure you want to delete this post ?
+            <form id="del-form" method="post" action="{% url 'chat:delete_message' %}">
+                {% csrf_token %}
+                <input id="_messageid" type="hidden" name="messageid" />
+            </form>
+        </div> 
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button id="del-btn" type="button" class="btn btn-danger">Yes</button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock content %}
+
+
+{% block script %}
+{{ block.super }}
+<script type="text/javascript">
+    $(document).ready(function(){
+        let modal = document.getElementById("exampleModal");
+        modal.addEventListener("show.bs.modal",function(evt){
+            let deleteButton = evt.relatedTarget;
+            $("#_messageid").val(deleteButton.dataset.messageid);
+        });
+        $("#del-btn").click(function(){
+            $('#del-form').submit();
+        })
+    }); 
+</script>
+{% endblock %}

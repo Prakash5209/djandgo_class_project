@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if messages %}
+    {% for message in messages %}
+    <div class="alert alert-success">
+        {{message}}
+    </div>
+    {% endfor %}
+{% endif %}
+{% if form %}
+<div>
+    <form method="post" action="{% url 'user:profile_update' %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <input type="submit" value="Submit" name="submit" class="btn btn-info"/>
+    </form>
+</div>
+{% else %}
+<div class="row">
+    <div class="col-sm-12 col-md-4 col-lg-4"></div>
+    <div class="col-sm-12 col-md-4 col-lg-4">
+        {% if user.profile.avatar %}
+        <div>
+            <img class="img-fluid" src="{{ user.profile.avatar.url }}" alt=""/>
+        </div>
+        {% endif %}
+    </div>
+    <div class="col-sm-12 col-md-4 col-lg-4"></div>
+</div>
+<div class="row">
+    <div class="col-sm-12 col-md-2 col-lg-2"></div>
+    <div class="col-sm-12 col-md-8 col-lg-8 ">
+        <table class="table table-striped">
+            <thead>
+            <tbody class="fw-bold">
+                <tr>
+                    <td class="text-success">First Name:</td> <td>{{ user.first_name }}</td>
+                </tr>
+                <tr>
+                    <td class="text-success">Last Name:</td> <td>{{ user.last_name }}</td>
+                </tr>
+                <tr>
+                    <td class="text-success">Email:</td> <td>{{ user.email }}</td>
+                </tr>
+            </tbody>
+        </thead>
+        </table>
+    </div>
+    <div class="col-sm-12 col-md-2 col-lg-2"></div>
+</div>
+<div>
+    {{form.as_p }}
+</div>
+{% endif %}
+{% endblock content %}
